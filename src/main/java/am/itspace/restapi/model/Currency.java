@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +18,7 @@ public class Currency {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private double rate;
-    private Date createdDate;
+    private LocalDateTime createdDate;
+    private CurrencyType currencyType;
 
 }
