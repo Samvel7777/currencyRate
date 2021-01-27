@@ -6,6 +6,7 @@ import am.itspace.restapi.dto.UserDto;
 import am.itspace.restapi.exception.DuplicateEntityException;
 import am.itspace.restapi.model.LastLogin;
 import am.itspace.restapi.model.User;
+import am.itspace.restapi.security.CurrentUser;
 import am.itspace.restapi.service.LastLoginService;
 import am.itspace.restapi.service.UserService;
 import am.itspace.restapi.util.JwtTokenUtil;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,11 +60,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
     }
 
-    @GetMapping("/user/lastLogin/{userId}")
-    public ResponseEntity<List<LastLogin>> lastLogin(@PathVariable("userId") int userId) {
-
-        if (userId > 0) {
-            return ResponseEntity.ok(lastLoginService.findByUserId(userId));
+    @GetMapping("/user/lastLogin")
+    public ResponseEntity<List<LastLogin>> lastLogin(@AuthenticationPrincipal CurrentUser currentUser) {
+        if (currentUser != null) {
+            User user = currentUser.getUser();
+            return ResponseEntity.ok(lastLoginService.findByUserId(user.getId()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

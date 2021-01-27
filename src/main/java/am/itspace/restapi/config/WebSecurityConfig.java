@@ -40,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/calculateCurrency").hasAnyAuthority("USER", "ADMIN")
                 .antMatchers(HttpMethod.GET, "/getRateHistory").hasAnyAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET, "/getCurrencyRate").hasAnyAuthority("ADMIN")
-                .antMatchers(HttpMethod.GET,"/user/lastLogin/{userId}").hasAnyAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET,"/user/lastLogin/{userId}").authenticated()
                 .anyRequest().permitAll();
 
         http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
