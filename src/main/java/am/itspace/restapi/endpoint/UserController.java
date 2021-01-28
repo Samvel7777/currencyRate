@@ -61,10 +61,10 @@ public class UserController {
     }
 
     @GetMapping("/user/lastLogin")
-    public ResponseEntity<List<LastLogin>> lastLogin(@AuthenticationPrincipal CurrentUser currentUser) {
+    public ResponseEntity<List<LastLogin>> lastLogin() {
+        User currentUser = userService.getCurrentUser();
         if (currentUser != null) {
-            User user = currentUser.getUser();
-            return ResponseEntity.ok(lastLoginService.findByUserId(user.getId()));
+            return ResponseEntity.ok(lastLoginService.findByUserId(currentUser.getId()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
