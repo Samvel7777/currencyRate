@@ -6,16 +6,15 @@ import am.itspace.restapi.dto.UserDto;
 import am.itspace.restapi.exception.DuplicateEntityException;
 import am.itspace.restapi.model.LastLogin;
 import am.itspace.restapi.model.User;
-import am.itspace.restapi.security.CurrentUser;
 import am.itspace.restapi.service.EmailService;
 import am.itspace.restapi.service.LastLoginService;
 import am.itspace.restapi.service.UserService;
 import am.itspace.restapi.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +27,9 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
+
+    @Value("${mail.link}")
+    private String link;
 
     private final JwtTokenUtil jwtTokenUtil;
     private final UserService userService;
@@ -44,7 +46,7 @@ public class UserController {
             user.setActive(false);
             user.setToken(UUID.randomUUID().toString());
             userService.save(user);
-            String link = "http://localhost:8080/activate?email=" + user.getEmail() + "&token=" + user.getToken();
+            link = String.format(link, user.getEmail(), user.getToken());
             emailService.send(user.getEmail(), "Dear " + user.getEmail(), "Please click to this link to activate your page " + link);
             return ResponseEntity.ok().build();
         }
