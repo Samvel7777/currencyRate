@@ -7,6 +7,7 @@ import am.itspace.restapi.exception.DuplicateEntityException;
 import am.itspace.restapi.model.LastLogin;
 import am.itspace.restapi.model.User;
 import am.itspace.restapi.security.CurrentUser;
+import am.itspace.restapi.service.EmailService;
 import am.itspace.restapi.service.LastLoginService;
 import am.itspace.restapi.service.UserService;
 import am.itspace.restapi.util.JwtTokenUtil;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -31,15 +34,36 @@ public class UserController {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final LastLoginService lastLoginService;
+    private final EmailService emailService;
 
     @PostMapping("/user/add")
-    public User createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<User> createUser(@RequestBody UserDto userDto) {
         if (userService.findByEmail(userDto.getEmail()).isEmpty()) {
             User user = modelMapper.map(userDto, User.class);
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-            return userService.save(user);
+            user.setActive(false);
+            user.setToken(UUID.randomUUID().toString());
+            userService.save(user);
+            String link = "http://localhost:8080/activate?email=" + user.getEmail() + "&token=" + user.getToken();
+            emailService.send(user.getEmail(), "Dear " + user.getEmail(), "Please click to this link to activate your page " + link);
+            return ResponseEntity.ok().build();
         }
         throw new DuplicateEntityException("User already exists");
+    }
+
+    @GetMapping("/activate")
+    public ResponseEntity<User> activate(@RequestParam("email") String email, @RequestParam("token") String token) {
+        Optional<User> byEmail = userService.findByEmail(email);
+        if (byEmail.isPresent()) {
+            User user = byEmail.get();
+            if (user.getToken().equals(token)) {
+                user.setActive(true);
+                user.setToken("");
+                userService.save(user);
+                return ResponseEntity.ok().build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping("/user/auth")

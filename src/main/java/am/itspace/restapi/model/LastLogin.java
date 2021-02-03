@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -32,7 +33,7 @@ public class LastLogin {
     private int id;
     @JsonProperty("ip")
     private String ip;
-    @JsonProperty("continent_name")
+    @JsonProperty("continent_code")
     private String countryCode;
     @JsonProperty("country_name")
     private String countryName;
@@ -42,6 +43,7 @@ public class LastLogin {
     private String regionName;
     @JsonProperty("city")
     private String city;
+    private LocalDateTime loginDate;
     private int userId;
 
     public LastLogin(LastLogin lastLogin, int userId) {

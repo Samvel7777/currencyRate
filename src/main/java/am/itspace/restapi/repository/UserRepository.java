@@ -1,6 +1,5 @@
 package am.itspace.restapi.repository;
 
-
 import am.itspace.restapi.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

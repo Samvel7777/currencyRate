@@ -22,7 +22,9 @@ public class User {
     private String surname;
     private String email;
     private String password;
+    private boolean active;
     @Enumerated(value = EnumType.STRING)
     private UserType userType = UserType.USER;
+    private String token;
 
 }

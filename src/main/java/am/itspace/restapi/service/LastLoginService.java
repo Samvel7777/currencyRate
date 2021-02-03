@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,19 +27,19 @@ public class LastLoginService {
         if (ip == null) {
             ip = request.getLocalAddr();
         }
-        LastLogin responseLoginAddress = getCountryByIP(ip);
+        am.itspace.restapi.model.LastLogin responseLoginAddress = getCountryByIP(ip);
         if (responseLoginAddress != null) {
             saveLastLogin(responseLoginAddress, userId);
         }
     }
 
-    private LastLogin getCountryByIP(String ip) {
+    private am.itspace.restapi.model.LastLogin getCountryByIP(String ip) {
         RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject(String.format(baseUrl, ip, key), LastLogin.class);
+        return restTemplate.getForObject(String.format(baseUrl, ip, key), am.itspace.restapi.model.LastLogin.class);
     }
 
-    private void saveLastLogin(LastLogin lastLogin, int userId) {
-        lastLoginRepository.save(new LastLogin(lastLogin, userId));
+    private void saveLastLogin(am.itspace.restapi.model.LastLogin lastLogin, int userId) {
+        lastLoginRepository.save(new am.itspace.restapi.model.LastLogin(lastLogin, userId));
     }
 
     public List<LastLogin> findByUserId(int userId) {
