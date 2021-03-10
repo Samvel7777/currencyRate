@@ -27,19 +27,19 @@ public class LastLoginService {
         if (ip == null) {
             ip = request.getLocalAddr();
         }
-        am.itspace.restapi.model.LastLogin responseLoginAddress = getCountryByIP(ip);
+        LastLogin responseLoginAddress = getCountryByIP(ip);
         if (responseLoginAddress != null) {
             saveLastLogin(responseLoginAddress, userId);
         }
     }
 
-    private am.itspace.restapi.model.LastLogin getCountryByIP(String ip) {
+    private LastLogin getCountryByIP(String ip) {
         RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.getForObject(String.format(baseUrl, ip, key), am.itspace.restapi.model.LastLogin.class);
+        return restTemplate.getForObject(String.format(baseUrl, ip, key), LastLogin.class);
     }
 
     private void saveLastLogin(am.itspace.restapi.model.LastLogin lastLogin, int userId) {
-        lastLoginRepository.save(new am.itspace.restapi.model.LastLogin(lastLogin, userId));
+        lastLoginRepository.save(new LastLogin(lastLogin, userId));
     }
 
     public List<LastLogin> findByUserId(int userId) {

@@ -8,8 +8,10 @@ import am.itspace.restapi.model.LastLogin;
 import am.itspace.restapi.model.User;
 import am.itspace.restapi.service.EmailService;
 import am.itspace.restapi.service.LastLoginService;
+import am.itspace.restapi.service.PDFReportService;
 import am.itspace.restapi.service.UserService;
 import am.itspace.restapi.util.JwtTokenUtil;
+import com.itextpdf.text.DocumentException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,6 +40,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final LastLoginService lastLoginService;
     private final EmailService emailService;
+    private final PDFReportService pdfReportService;
 
     @PostMapping("/user/add")
     public ResponseEntity<User> createUser(@RequestBody UserDto userDto) {
@@ -87,9 +91,10 @@ public class UserController {
     }
 
     @GetMapping("/user/lastLogin")
-    public ResponseEntity<List<LastLogin>> lastLogin() {
+    public ResponseEntity<List<LastLogin>> lastLogin() throws FileNotFoundException, DocumentException {
         User currentUser = userService.getCurrentUser();
         if (currentUser != null) {
+            pdfReportService.report(lastLoginService.findByUserId(currentUser.getId()));
             return ResponseEntity.ok(lastLoginService.findByUserId(currentUser.getId()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
