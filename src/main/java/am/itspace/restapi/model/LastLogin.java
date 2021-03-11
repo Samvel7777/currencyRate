@@ -33,7 +33,7 @@ public class LastLogin {
     private int id;
     @JsonProperty("ip")
     private String ip;
-    @JsonProperty("continent_code")
+    @JsonProperty("country_code")
     private String countryCode;
     @JsonProperty("country_name")
     private String countryName;

@@ -94,7 +94,6 @@ public class UserController {
     public ResponseEntity<List<LastLogin>> lastLogin() throws FileNotFoundException, DocumentException {
         User currentUser = userService.getCurrentUser();
         if (currentUser != null) {
-            pdfReportService.report(lastLoginService.findByUserId(currentUser.getId()));
             return ResponseEntity.ok(lastLoginService.findByUserId(currentUser.getId()));
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
