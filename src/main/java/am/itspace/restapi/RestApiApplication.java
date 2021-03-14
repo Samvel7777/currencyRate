@@ -23,8 +23,8 @@ public class RestApiApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        emailService.send("samvelbaloyan1995@gmail.com","Barev","axper");
+        emailService.send("Mher jan ","exav axper","mher13.02.94@gmail.com");
 
-        //pdfReportService.reportUsersLastLogin();
+        pdfReportService.reportUsersLastLogin();
     }
 }

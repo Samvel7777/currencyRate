@@ -28,7 +28,7 @@ public class PDFReportService {
     private final UserRepository userRepository;
     private final LastLoginRepository lastLoginRepository;
 
-//    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 1000)
     public void reportUsersLastLogin() {
         List<User> all = userRepository.findAll();
         for (User user : all) {
@@ -81,7 +81,7 @@ public class PDFReportService {
             document.add(table);
             document.close();
             instance.close();
-//            emailService.sendReportMail(user.getEmail(), "Dear " + user.getEmail(), ", Your last logins - >", file.getPath());
+            emailService.sendReportMail(user.getEmail(), "Dear " + user.getEmail(), ", Your last logins - >", file.getPath());
         } catch (Exception e) {
             e.printStackTrace();
         }

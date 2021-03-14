@@ -7,12 +7,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
 @Service
@@ -53,6 +55,46 @@ public class EmailService {
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
         } catch (MessagingException ignored) {
+        }
+    }
+
+    @Async
+    public void sendReportMail(String subject, String messageText, String email, String file) {
+        try {
+
+            Session session = Session.getInstance(getMailProperties(mailUsername, mailPassword));
+            session.setDebug(true);
+            MimeMessage message = new MimeMessage(session);
+            message.setHeader("Content-Type", "text/plain; charset=UTF-8");
+            message.setSubject(subject, "UTF-8");
+            message.setText(messageText, "UTF-8");
+
+            message.setFrom(new InternetAddress(mailUsername));
+            InternetAddress toAddress = new InternetAddress(email);
+            message.addRecipient(Message.RecipientType.TO, toAddress);
+
+            message.setSubject(subject);
+            message.setText(messageText);
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(messageText);
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+
+            messageBodyPart = new MimeBodyPart();
+            String fileName = "report.pdf";
+            DataSource source = new FileDataSource(file);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(fileName);
+            multipart.addBodyPart(messageBodyPart);
+
+            message.setContent(multipart);
+
+            Transport transport = session.getTransport("smtp");
+            transport.connect(mailSmtpHost, mailUsername, mailPassword);
+            transport.sendMessage(message, message.getAllRecipients());
+            transport.close();
+        } catch (MessagingException me) {
         }
     }
 
