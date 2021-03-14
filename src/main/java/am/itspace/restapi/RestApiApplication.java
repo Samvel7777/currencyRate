@@ -1,5 +1,6 @@
 package am.itspace.restapi;
 
+import am.itspace.restapi.service.EmailService;
 import am.itspace.restapi.service.PDFReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -17,9 +18,13 @@ public class RestApiApplication implements CommandLineRunner {
 
     @Autowired
     private PDFReportService pdfReportService;
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public void run(String... args) throws Exception {
-        pdfReportService.reportUsersLastLogin();
+        emailService.send("samvelbaloyan1995@gmail.com","Barev","axper");
+
+        //pdfReportService.reportUsersLastLogin();
     }
 }

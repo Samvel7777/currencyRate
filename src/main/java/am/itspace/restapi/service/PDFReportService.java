@@ -41,7 +41,7 @@ public class PDFReportService {
     }
 
 
-    private void report(List<LastLogin> lastLogin, User user) {
+    private void report(List<LastLogin> lastLogins, User user) {
 
         try {
             File filePath = new File(basePath);
@@ -52,14 +52,13 @@ public class PDFReportService {
             document.open();
 
             Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-            Chunk chunk = new Chunk(String.valueOf(user.getId()), font);
+            Chunk chunk = new Chunk(String.valueOf("User ID - " + user.getId()) + "\n\n", font);
 
-            PdfPTable table = new PdfPTable(9);
+            PdfPTable table = new PdfPTable(7);
             table.setHorizontalAlignment(Element.ALIGN_LEFT);
             table.setTotalWidth(550);
             table.setLockedWidth(true);
 
-            table.addCell(new PdfPCell(new Phrase("Id", font)));
             table.addCell(new PdfPCell(new Phrase("Ip", font)));
             table.addCell(new PdfPCell(new Phrase("Country Code", font)));
             table.addCell(new PdfPCell(new Phrase("Country Name", font)));
@@ -68,22 +67,21 @@ public class PDFReportService {
             table.addCell(new PdfPCell(new Phrase("City", font)));
             table.addCell(new PdfPCell(new Phrase("Login Date", font)));
 
-            for (LastLogin lastLogins : lastLogin) {
-                table.addCell(new PdfPCell(new Phrase(lastLogins.getId())));
-                table.addCell(new PdfPCell(new Phrase(lastLogins.getIp())));
-                table.addCell(new PdfPCell(new Phrase(lastLogins.getCountryCode())));
-                table.addCell(new PdfPCell(new Phrase(lastLogins.getCountryName())));
-                table.addCell(new PdfPCell(new Phrase(lastLogins.getRegionCode())));
-                table.addCell(new PdfPCell(new Phrase(lastLogins.getRegionName())));
-                table.addCell(new PdfPCell(new Phrase(lastLogins.getCity())));
-                table.addCell(new PdfPCell(new Phrase(String.valueOf(lastLogins.getLoginDate()))));
+            for (LastLogin lastLogin : lastLogins) {
+                table.addCell(new PdfPCell(new Phrase(lastLogin.getIp())));
+                table.addCell(new PdfPCell(new Phrase(lastLogin.getCountryCode())));
+                table.addCell(new PdfPCell(new Phrase(lastLogin.getCountryName())));
+                table.addCell(new PdfPCell(new Phrase(lastLogin.getRegionCode())));
+                table.addCell(new PdfPCell(new Phrase(lastLogin.getRegionName())));
+                table.addCell(new PdfPCell(new Phrase(lastLogin.getCity())));
+                table.addCell(new PdfPCell(new Phrase(String.valueOf(lastLogin.getLoginDate()))));
             }
 
             document.add(chunk);
             document.add(table);
             document.close();
             instance.close();
-            emailService.sendReportMail(user.getEmail(), "Dear " + user.getEmail(), ", Your last logins - >", file.getPath());
+//            emailService.sendReportMail(user.getEmail(), "Dear " + user.getEmail(), ", Your last logins - >", file.getPath());
         } catch (Exception e) {
             e.printStackTrace();
         }
