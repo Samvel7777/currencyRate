@@ -19,14 +19,12 @@ import java.io.File;
 @RequiredArgsConstructor
 public class EmailService {
 
-    @Value("${pdf.report.path}")
-    private String basePath;
-
     private final MailSender mailSender;
     private final JavaMailSender javaMailSender;
 
     @Async
     public void send(String to, String subject, String message) {
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(to);
         simpleMailMessage.setSubject(subject);
@@ -34,23 +32,24 @@ public class EmailService {
         mailSender.send(simpleMailMessage);
     }
 
-    public void sendReportMail(String to, String subject, String message, File file) {
+    @Async
+    public void sendReportMail(String to, String subject, String message, String file) {
 
         MimeMessage messages = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper;
 
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(messages, true);
-
+            helper = new MimeMessageHelper(messages, true);
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(message);
 
-            FileSystemResource pdfFile = new FileSystemResource(basePath);
-            helper.addAttachment(pdfFile.getFilename(), file);
+            FileSystemResource pdfFile = new FileSystemResource(file);
+            helper.addAttachment("Invoice", pdfFile);
 
+            javaMailSender.send(messages);
         } catch (MessagingException e) {
-            throw new MailParseException(e);
+            e.printStackTrace();
         }
-        javaMailSender.send(messages);
     }
 }
